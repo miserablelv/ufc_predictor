@@ -7,7 +7,7 @@ import pandas as pd
 import json
 import os
 
-from fighter import calculate_fighter_stats, get_all_fight_dates, less_than_five_fights
+from fighter import calculate_fighter_stats, get_all_fight_dates, less_than_five_fights, get_weight_class
 
 
 
@@ -28,15 +28,6 @@ def encode_weight_class(weight_class):
 
 def is_women_fight(soup):
     return ("Women's" in soup.body.text)
-
-
-def get_weight_class(soup):
-    division = soup.find("i", class_="b-fight-details__fight-title")
-    division_txt = division.text.split()
-    if len(division_txt) > 2:
-        return division_txt[-3]
-    else:
-        return division_txt[0]
 
 
 def get_n_rounds(soup):
@@ -193,8 +184,6 @@ def extract_fights_in_events(events_urls): # it would be better to return 1 by 1
             
             if is_women_fight(soup):
                 continue
-    
-            fight_dict['Fight_info'] = get_fight_details(soup)
                 
             fighters = get_fighters(soup) # get the urls
 
@@ -210,6 +199,8 @@ def extract_fights_in_events(events_urls): # it would be better to return 1 by 1
                     
             if less_than_five_fights(fighters_soup[0], event_datetime) or less_than_five_fights(fighters_soup[1], event_datetime):
                 continue
+
+            fight_dict['Fight_info'] = get_fight_details(soup)
             
             fight_dict['Fight_id'] = fight_link.split('/')[4]
             fight_dict['Fighter_A_id'] = fighters[0].split('/')[4]
